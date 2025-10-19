@@ -6,6 +6,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.traveljournal.fragments.AddNewTripFragment
+import com.example.traveljournal.fragments.MapFragment
+import com.example.traveljournal.fragments.TripsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -18,6 +21,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        if (savedInstanceState == null) openFragment(TripsFragment.newInstance())
 
         val navView = findViewById<BottomNavigationView>(R.id.navView)
 
