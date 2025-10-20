@@ -7,4 +7,9 @@
     <string name="search">Search</string>
     <string name="filter">Filter</string>
     <string name="name">Name</string>
+    <string name="date">Date</string>
+    <string name="description">Description</string>
+    <string name="search_trip">Search for a trip...</string>
+    <string name="new_ones_first">New ones first</string>
+    <string name="old_ones_first">Old ones first</string>
 </resources>

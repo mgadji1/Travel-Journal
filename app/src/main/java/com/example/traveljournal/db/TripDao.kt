@@ -9,11 +9,14 @@ import androidx.room.Query
 @Dao
 interface TripDao {
     @Query("SELECT * FROM trips")
-    fun getAllTrips() : List<Trip>
+    suspend fun getAllTrips() : List<Trip>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTrip(trip : Trip)
+    suspend fun insertTrip(trip : Trip)
 
     @Delete
-    fun deleteTrip(trip : Trip)
+    suspend fun deleteTrip(trip : Trip)
+
+    @Query("SELECT * FROM trips WHERE name LIKE :query OR description LIKE :query")
+    suspend fun searchByQuery(query: String) : List<Trip>
 }

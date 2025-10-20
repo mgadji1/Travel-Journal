@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.traveljournal.R
 import com.example.traveljournal.db.Trip
-import com.example.traveljournal.trips.TripViewHolder
 import com.example.traveljournal.imageloader.GlideImageLoader
 
 class TripAdapter(
     private val layoutInflater: LayoutInflater,
-    private val context : Context
+    context : Context,
+    private val listener : OnTripClickListener
 ) : RecyclerView.Adapter<TripViewHolder>() {
     private val trips = mutableListOf<Trip>()
 
@@ -34,6 +34,10 @@ class TripAdapter(
         imageLoader.loadImage(trip.imageUrl, holder.imPhoto)
 
         holder.tvName.text = trip.name
+
+        holder.itemView.setOnClickListener {
+            listener.onClick(trip)
+        }
     }
 
     override fun getItemCount(): Int = trips.size
@@ -42,4 +46,12 @@ class TripAdapter(
         trips.add(trip)
         notifyItemInserted(trips.lastIndex)
     }
+
+    fun setTrips(newTrips : List<Trip>) {
+        trips.clear()
+        trips.addAll(newTrips)
+        notifyDataSetChanged()
+    }
+
+    fun getTrips() : List<Trip> = trips
 }
