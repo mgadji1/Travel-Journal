@@ -12,4 +12,6 @@
     <string name="search_trip">Search for a trip...</string>
     <string name="new_ones_first">New ones first</string>
     <string name="old_ones_first">Old ones first</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>

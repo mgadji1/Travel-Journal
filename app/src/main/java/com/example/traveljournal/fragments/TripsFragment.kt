@@ -20,6 +20,7 @@ import com.example.traveljournal.R
 import com.example.traveljournal.db.AppDatabase
 import com.example.traveljournal.db.Trip
 import com.example.traveljournal.db.TripDao
+import com.example.traveljournal.trips.OnMoreOptionsClickListener
 import com.example.traveljournal.trips.OnTripClickListener
 import com.example.traveljournal.trips.TripAdapter
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,7 @@ const val BOTTOM_SHEET_TAG = "TripBottomSheet"
 
 class TripsFragment : Fragment() {
     private lateinit var db : AppDatabase
-    private lateinit var tripsDao : TripDao
+    private lateinit var tripDao : TripDao
 
     private lateinit var adapter : TripAdapter
 
@@ -53,21 +54,60 @@ class TripsFragment : Fragment() {
 
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        adapter = TripAdapter(layoutInflater, requireContext(), object : OnTripClickListener {
+        val listener = object : OnTripClickListener {
             override fun onClick(trip : Trip) {
                 val bottomSheet = TripDetailsFragment.newInstance(trip)
                 bottomSheet.show(parentFragmentManager, BOTTOM_SHEET_TAG)
             }
-        })
+        }
+
+        val onMoreOptionsClickListener = object : OnMoreOptionsClickListener {
+            override fun onEdit() {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDelete(trip : Trip) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    tripDao.deleteTrip(trip)
+                    withContext(Dispatchers.Main) {
+                        adapter.deleteTrip(trip)
+                    }
+                }
+            }
+        }
+
+        adapter = TripAdapter(layoutInflater, requireContext(), listener, onMoreOptionsClickListener)
 
         recyclerView.adapter = adapter
 
         db = AppDatabase.getDatabase(requireContext())
-        tripsDao = db.tripDao()
+        tripDao = db.tripDao()
+
+//        val trip = Trip(
+//            imageUrl = "iuwbvi",
+//            name = "vioevni",
+//            date = "16.08.2006",
+//            description = "viownouineibueoibo",
+//            latitude = 55.751244,
+//            longitude = 37.618423
+//        )
+
+//        val trip2 = Trip(
+//            imageUrl = "vjkwvbi",
+//            name = "ouiciubwv",
+//            date = "16.08.2007",
+//            description = "poqjfioubwvpo",
+//            latitude = 51.509865,
+//            longitude = -0.118092
+//        )
+
+//        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+//            tripDao.insertTrip(trip2)
+//        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             val trips = withContext(Dispatchers.IO) {
-                tripsDao.getAllTrips()
+                tripDao.getAllTrips()
             }
             adapter.setTrips(trips)
         }
@@ -103,7 +143,7 @@ class TripsFragment : Fragment() {
     private fun performSearch(query : String) {
         val searchQuery = "%$query%"
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            val trips = tripsDao.searchByQuery(searchQuery)
+            val trips = tripDao.searchByQuery(searchQuery)
             launch(Dispatchers.Main) {
                 adapter.setTrips(trips)
             }

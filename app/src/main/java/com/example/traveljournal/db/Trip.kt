@@ -15,7 +15,9 @@ data class Trip(
     val imageUrl : String,
     val name : String,
     val date : String,
-    val description : String
+    val description : String,
+    val latitude : Double,
+    val longitude : Double
 ) : Parcelable, Comparable<Trip> {
     override fun compareTo(other: Trip): Int {
         val format = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())

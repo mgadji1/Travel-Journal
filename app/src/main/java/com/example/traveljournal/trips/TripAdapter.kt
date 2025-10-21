@@ -3,6 +3,7 @@ package com.example.traveljournal.trips
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.traveljournal.R
 import com.example.traveljournal.db.Trip
@@ -10,8 +11,9 @@ import com.example.traveljournal.imageloader.GlideImageLoader
 
 class TripAdapter(
     private val layoutInflater: LayoutInflater,
-    context : Context,
-    private val listener : OnTripClickListener
+    private val context : Context,
+    private val listener : OnTripClickListener,
+    private val onMoreOptionsClickListener: OnMoreOptionsClickListener
 ) : RecyclerView.Adapter<TripViewHolder>() {
     private val trips = mutableListOf<Trip>()
 
@@ -38,6 +40,23 @@ class TripAdapter(
         holder.itemView.setOnClickListener {
             listener.onClick(trip)
         }
+
+        holder.btnMore.setOnClickListener {
+            val popupMenu = PopupMenu(holder.itemView.context, holder.btnMore)
+
+            popupMenu.menu.add(context.getString(R.string.edit))
+            popupMenu.menu.add(context.getString(R.string.delete))
+
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.title) {
+                    context.getString(R.string.edit) -> onMoreOptionsClickListener.onEdit()
+                    context.getString(R.string.delete) -> onMoreOptionsClickListener.onDelete(trip)
+                }
+                true
+            }
+
+            popupMenu.show()
+        }
     }
 
     override fun getItemCount(): Int = trips.size
@@ -45,6 +64,12 @@ class TripAdapter(
     fun addTrip(trip : Trip) {
         trips.add(trip)
         notifyItemInserted(trips.lastIndex)
+    }
+
+    fun deleteTrip(trip : Trip) {
+        val position = trips.indexOf(trip)
+        trips.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     fun setTrips(newTrips : List<Trip>) {
