@@ -14,4 +14,8 @@
     <string name="old_ones_first">Old ones first</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="add_new_trip">Add New Trip</string>
+    <string name="choose_location">Choose Location</string>
+    <string name="pick_image">Pick Image</string>
+    <string name="location">Location</string>
 </resources>

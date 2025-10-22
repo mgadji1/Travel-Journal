@@ -83,28 +83,6 @@ class TripsFragment : Fragment() {
         db = AppDatabase.getDatabase(requireContext())
         tripDao = db.tripDao()
 
-//        val trip = Trip(
-//            imageUrl = "iuwbvi",
-//            name = "vioevni",
-//            date = "16.08.2006",
-//            description = "viownouineibueoibo",
-//            latitude = 55.751244,
-//            longitude = 37.618423
-//        )
-
-//        val trip2 = Trip(
-//            imageUrl = "vjkwvbi",
-//            name = "ouiciubwv",
-//            date = "16.08.2007",
-//            description = "poqjfioubwvpo",
-//            latitude = 51.509865,
-//            longitude = -0.118092
-//        )
-
-//        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-//            tripDao.insertTrip(trip2)
-//        }
-
         viewLifecycleOwner.lifecycleScope.launch {
             val trips = withContext(Dispatchers.IO) {
                 tripDao.getAllTrips()

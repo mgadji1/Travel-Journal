@@ -42,7 +42,7 @@ class TripDetailsFragment : BottomSheetDialogFragment() {
             arguments?.getParcelable(TRIP_KEY)!!
         }
 
-        imageLoader.loadImage(trip.imageUrl, imDialogPhoto)
+        imageLoader.loadImage(trip.imageUri, imDialogPhoto)
 
         tvDialogName.text = String.format("%s $NAME_IMAGE: %s", getString(R.string.name), trip.name)
         tvDialogDate.text = String.format("%s $DATE_IMAGE: %s", getString(R.string.date), trip.date)

@@ -33,7 +33,7 @@ class TripAdapter(
     ) {
         val trip = trips[position]
 
-        imageLoader.loadImage(trip.imageUrl, holder.imPhoto)
+        imageLoader.loadImage(trip.imageUri, holder.imPhoto)
 
         holder.tvName.text = trip.name
 
@@ -60,11 +60,6 @@ class TripAdapter(
     }
 
     override fun getItemCount(): Int = trips.size
-
-    fun addTrip(trip : Trip) {
-        trips.add(trip)
-        notifyItemInserted(trips.lastIndex)
-    }
 
     fun deleteTrip(trip : Trip) {
         val position = trips.indexOf(trip)

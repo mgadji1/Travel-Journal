@@ -12,7 +12,7 @@ import java.util.Locale
 @Entity(tableName = "trips")
 data class Trip(
     @PrimaryKey(autoGenerate = true) val id : Int = 0,
-    val imageUrl : String,
+    val imageUri : String,
     val name : String,
     val date : String,
     val description : String,
