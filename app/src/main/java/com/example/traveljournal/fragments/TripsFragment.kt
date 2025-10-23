@@ -62,8 +62,12 @@ class TripsFragment : Fragment() {
         }
 
         val onMoreOptionsClickListener = object : OnMoreOptionsClickListener {
-            override fun onEdit() {
-                TODO("Not yet implemented")
+            override fun onEdit(trip : Trip) {
+                parentFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer, AddNewTripFragment.newInstance(trip))
+                    .addToBackStack(null)
+                    .commit()
             }
 
             override fun onDelete(trip : Trip) {

@@ -49,7 +49,7 @@ class TripAdapter(
 
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.title) {
-                    context.getString(R.string.edit) -> onMoreOptionsClickListener.onEdit()
+                    context.getString(R.string.edit) -> onMoreOptionsClickListener.onEdit(trip)
                     context.getString(R.string.delete) -> onMoreOptionsClickListener.onDelete(trip)
                 }
                 true

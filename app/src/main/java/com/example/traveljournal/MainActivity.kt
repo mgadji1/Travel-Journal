@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.addFragment -> {
-                    openFragment(AddNewTripFragment.newInstance())
+                    openFragment(AddNewTripFragment.newInstance(null))
                     true
                 }
                 else -> false

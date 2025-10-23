@@ -3,6 +3,7 @@ package com.example.traveljournal.fragments
 import android.content.Intent
 import java.text.SimpleDateFormat
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.traveljournal.R
@@ -27,6 +29,8 @@ import java.util.Date
 import java.util.Locale
 
 class AddNewTripFragment : Fragment() {
+    private var editingTrip : Trip? = null
+
     private lateinit var imagePreview : ImageView
     private var selectedImageUri : Uri? = null
 
@@ -50,6 +54,21 @@ class AddNewTripFragment : Fragment() {
     private lateinit var edDescription : EditText
     private lateinit var tvLocation : TextView
 
+    private var lat: Double? = null
+    private var lon: Double? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let { bundle ->
+            editingTrip = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                 bundle.getParcelable(ARG_TRIP, Trip::class.java)
+            } else {
+                bundle.getParcelable(ARG_TRIP)
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,14 +80,22 @@ class AddNewTripFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val toolbar = view.findViewById<Toolbar>(R.id.new_trip_toolbar)
-        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = getString(R.string.add_new_trip)
+        showToolbar(toolbar)
 
         db = AppDatabase.getDatabase(requireContext())
         tripDao = db.tripDao()
 
         val btnLocation = view.findViewById<Button>(R.id.btnLocation)
         tvLocation = view.findViewById(R.id.tvLocation)
+
+        btnAddTrip = view.findViewById(R.id.btnAddTrip)
+        edName = view.findViewById(R.id.edName)
+        edDescription = view.findViewById(R.id.edDescription)
+
+        imagePreview = view.findViewById(R.id.imagePreview)
+        val btnPickImage = view.findViewById<Button>(R.id.btnPickImage)
+
+        recoverData()
 
         btnLocation.setOnClickListener {
             parentFragmentManager
@@ -78,9 +105,6 @@ class AddNewTripFragment : Fragment() {
                 .commit()
         }
 
-        var lat: Double? = null
-        var lon: Double? = null
-
         parentFragmentManager.setFragmentResultListener(
             LOCATION_RESULT_KEY,
             viewLifecycleOwner
@@ -88,25 +112,37 @@ class AddNewTripFragment : Fragment() {
             lat = bundle.getDouble(LATITUDE_KEY)
             lon = bundle.getDouble(LONGITUDE_KEY)
 
-            tvLocation.text = "📍 ${String.format("%.3f, %.3f", lat, lon)}"
+            setLocation(lat!!, lon!!)
         }
-
-        imagePreview = view.findViewById(R.id.imagePreview)
-        val btnPickImage = view.findViewById<Button>(R.id.btnPickImage)
 
         btnPickImage.setOnClickListener {
             pickImageLauncher.launch(arrayOf("image/*"))
         }
 
-        btnAddTrip = view.findViewById(R.id.btnAddTrip)
-        edName = view.findViewById(R.id.edName)
-        edDescription = view.findViewById(R.id.edDescription)
-
         val currentDate = getCurrentDate()
 
         btnAddTrip.setOnClickListener {
-            createNewTrip(lat, lon, currentDate)
+            createOrEditTrip(lat, lon, currentDate)
         }
+    }
+
+    private fun recoverData() {
+        editingTrip?.let { trip ->
+            lat = trip.latitude
+            lon = trip.longitude
+            edName.setText(trip.name)
+            setLocation(trip.latitude, trip.longitude)
+            selectedImageUri = trip.imageUri.toUri()
+            imagePreview.setImageURI(selectedImageUri)
+            edDescription.setText(trip.description)
+            btnAddTrip.text = getString(R.string.edit_trip)
+        }
+    }
+
+    private fun showToolbar(toolbar : Toolbar) {
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        val title = if (editingTrip != null) getString(R.string.edit_trip) else getString(R.string.add_new_trip)
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = title
     }
 
     private fun getCurrentDate() : String {
@@ -116,19 +152,23 @@ class AddNewTripFragment : Fragment() {
         return formattedDate
     }
 
+    private fun createOrEditTrip(lat : Double?, lon : Double?, currentDate : String) {
+        if (editingTrip != null) {
+            editTrip(lat, lon, editingTrip!!)
+        } else {
+            createNewTrip(lat, lon, currentDate)
+        }
+    }
+
     private fun createNewTrip(lat : Double?, lon : Double?, currentDate : String) {
-        if (edName.text.isNotEmpty()
-            && edDescription.text.isNotEmpty()
-            && selectedImageUri != null
-            && lon != null
-            && lat != null) {
+        if (validateAllFields(lat, lon)) {
             val trip = Trip(
                 imageUri = selectedImageUri.toString(),
                 name = edName.text.toString(),
                 date = currentDate,
                 description = edDescription.text.toString(),
-                latitude = lat,
-                longitude = lon
+                latitude = lat!!,
+                longitude = lon!!
             )
 
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
@@ -144,6 +184,44 @@ class AddNewTripFragment : Fragment() {
         }
     }
 
+    private fun editTrip(lat : Double?, lon : Double?, editingTrip : Trip) {
+        if (validateAllFields(lat, lon)) {
+            val trip = editingTrip.copy(
+                imageUri = selectedImageUri.toString(),
+                name = edName.text.toString(),
+                date = editingTrip.date,
+                description = edDescription.text.toString(),
+                latitude = lat!!,
+                longitude = lon!!
+            )
+
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                tripDao.updateTrip(trip)
+
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(),
+                        getString(R.string.trip_was_updated), Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+                }
+            }
+        } else {
+            Toast.makeText(requireContext(),
+                getString(R.string.you_need_to_fill_all_fields), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun validateAllFields(lat : Double?, lon : Double?) : Boolean {
+        return edName.text.isNotEmpty()
+                && edDescription.text.isNotEmpty()
+                && selectedImageUri != null
+                && lon != null
+                && lat != null
+    }
+
+    private fun setLocation(lat : Double, lon : Double) {
+        tvLocation.text = "📍 ${String.format("%.3f, %.3f", lat, lon)}"
+    }
+
     private fun clearAllFields() {
         edName.text.clear()
         edDescription.text.clear()
@@ -152,7 +230,13 @@ class AddNewTripFragment : Fragment() {
     }
 
     companion object {
+        private const val ARG_TRIP = "arg_trip"
+
         @JvmStatic
-        fun newInstance() = AddNewTripFragment()
+        fun newInstance(trip : Trip?) = AddNewTripFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(ARG_TRIP, trip)
+            }
+        }
     }
 }
