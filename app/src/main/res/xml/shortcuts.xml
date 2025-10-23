@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="view_trips"
+        android:enabled="true"
+        android:icon="@drawable/trip"
+        android:shortcutShortLabel="@string/view_trips"
+        android:shortcutLongLabel="@string/view_trips"
+        android:shortcutDisabledMessage="@string/shortcut_disabled">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example.traveljournal"
+            android:targetClass="com.example.traveljournal.MainActivity"
+            android:data="app://view_trips"/>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="view_map"
+        android:enabled="true"
+        android:icon="@drawable/map"
+        android:shortcutShortLabel="@string/open_map"
+        android:shortcutLongLabel="@string/open_map"
+        android:shortcutDisabledMessage="@string/shortcut_disabled">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example.traveljournal"
+            android:targetClass="com.example.traveljournal.MainActivity"
+            android:data="app://view_map"/>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="add_trip"
+        android:enabled="true"
+        android:icon="@drawable/add"
+        android:shortcutShortLabel="@string/add_new_trip"
+        android:shortcutLongLabel="@string/add_new_trip"
+        android:shortcutDisabledMessage="@string/shortcut_disabled">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example.traveljournal"
+            android:targetClass="com.example.traveljournal.MainActivity"
+            android:data="app://add_new_trip"/>
+    </shortcut>
+</shortcuts>

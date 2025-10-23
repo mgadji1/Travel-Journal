@@ -24,4 +24,7 @@
     <string name="edit_trip">Edit Trip</string>
     <string name="share">Share</string>
     <string name="share_trip">Share Trip</string>
+    <string name="shortcut_disabled">Shortcut disabled</string>
+    <string name="open_map">Open Map</string>
+    <string name="view_trips">View Trips</string>
 </resources>
