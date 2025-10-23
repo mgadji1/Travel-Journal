@@ -1,5 +1,7 @@
 package com.example.traveljournal.fragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -12,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -26,6 +29,7 @@ import com.example.traveljournal.trips.TripAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 const val BOTTOM_SHEET_TAG = "TripBottomSheet"
 
@@ -77,6 +81,10 @@ class TripsFragment : Fragment() {
                         adapter.deleteTrip(trip)
                     }
                 }
+            }
+
+            override fun onShare(trip: Trip) {
+                shareTrip(trip)
             }
         }
 
@@ -174,6 +182,30 @@ class TripsFragment : Fragment() {
         }
 
         adapter.setTrips(sortedTrips)
+    }
+
+    private fun createNoteFile(trip : Trip) : Uri? {
+        val fileName = "${trip.title}.txt"
+        val file = File(requireContext().cacheDir, fileName)
+        file.writeText("Title: ${trip.title}\nDate: ${trip.date}\nDescription: ${trip.description}")
+
+        return FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.provider",
+            file
+        )
+    }
+
+    private fun shareTrip(trip: Trip) {
+        val fileUri = createNoteFile(trip)
+        fileUri?.let {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_STREAM, it)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_trip)))
+        }
     }
 
     companion object {

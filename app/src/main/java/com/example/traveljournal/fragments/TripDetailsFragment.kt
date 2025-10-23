@@ -44,7 +44,7 @@ class TripDetailsFragment : BottomSheetDialogFragment() {
 
         imageLoader.loadImage(trip.imageUri, imDialogPhoto)
 
-        tvDialogName.text = String.format("%s $NAME_IMAGE: %s", getString(R.string.name), trip.name)
+        tvDialogName.text = String.format("%s $NAME_IMAGE: %s", getString(R.string.title), trip.title)
         tvDialogDate.text = String.format("%s $DATE_IMAGE: %s", getString(R.string.date), trip.date)
         tvDialogDescription.text = String.format("%s $DESCRIPTION_IMAGE: %s", getString(R.string.description), trip.description)
     }

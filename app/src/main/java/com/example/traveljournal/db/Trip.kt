@@ -13,7 +13,7 @@ import java.util.Locale
 data class Trip(
     @PrimaryKey(autoGenerate = true) val id : Int = 0,
     val imageUri : String,
-    val name : String,
+    val title : String,
     val date : String,
     val description : String,
     val latitude : Double,

@@ -9,6 +9,6 @@ import com.example.traveljournal.R
 
 class TripViewHolder(containerView : View) : RecyclerView.ViewHolder(containerView) {
     val imPhoto = containerView.findViewById<ImageView>(R.id.imPhoto)
-    val tvName = containerView.findViewById<TextView>(R.id.tvName)
+    val tvName = containerView.findViewById<TextView>(R.id.tvTitle)
     val btnMore = containerView.findViewById<ImageButton>(R.id.btnMore)
 }

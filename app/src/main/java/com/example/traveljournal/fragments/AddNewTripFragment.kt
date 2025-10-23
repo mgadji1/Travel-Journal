@@ -50,7 +50,7 @@ class AddNewTripFragment : Fragment() {
     }
 
     private lateinit var btnAddTrip : Button
-    private lateinit var edName : EditText
+    private lateinit var edTitle : EditText
     private lateinit var edDescription : EditText
     private lateinit var tvLocation : TextView
 
@@ -89,7 +89,7 @@ class AddNewTripFragment : Fragment() {
         tvLocation = view.findViewById(R.id.tvLocation)
 
         btnAddTrip = view.findViewById(R.id.btnAddTrip)
-        edName = view.findViewById(R.id.edName)
+        edTitle = view.findViewById(R.id.edTitle)
         edDescription = view.findViewById(R.id.edDescription)
 
         imagePreview = view.findViewById(R.id.imagePreview)
@@ -130,7 +130,7 @@ class AddNewTripFragment : Fragment() {
         editingTrip?.let { trip ->
             lat = trip.latitude
             lon = trip.longitude
-            edName.setText(trip.name)
+            edTitle.setText(trip.title)
             setLocation(trip.latitude, trip.longitude)
             selectedImageUri = trip.imageUri.toUri()
             imagePreview.setImageURI(selectedImageUri)
@@ -164,7 +164,7 @@ class AddNewTripFragment : Fragment() {
         if (validateAllFields(lat, lon)) {
             val trip = Trip(
                 imageUri = selectedImageUri.toString(),
-                name = edName.text.toString(),
+                title = edTitle.text.toString(),
                 date = currentDate,
                 description = edDescription.text.toString(),
                 latitude = lat!!,
@@ -188,7 +188,7 @@ class AddNewTripFragment : Fragment() {
         if (validateAllFields(lat, lon)) {
             val trip = editingTrip.copy(
                 imageUri = selectedImageUri.toString(),
-                name = edName.text.toString(),
+                title = edTitle.text.toString(),
                 date = editingTrip.date,
                 description = edDescription.text.toString(),
                 latitude = lat!!,
@@ -211,7 +211,7 @@ class AddNewTripFragment : Fragment() {
     }
 
     private fun validateAllFields(lat : Double?, lon : Double?) : Boolean {
-        return edName.text.isNotEmpty()
+        return edTitle.text.isNotEmpty()
                 && edDescription.text.isNotEmpty()
                 && selectedImageUri != null
                 && lon != null
@@ -223,7 +223,7 @@ class AddNewTripFragment : Fragment() {
     }
 
     private fun clearAllFields() {
-        edName.text.clear()
+        edTitle.text.clear()
         edDescription.text.clear()
         imagePreview.setImageDrawable(null)
         tvLocation.text = ""

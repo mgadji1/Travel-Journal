@@ -73,7 +73,7 @@ class MapFragment : Fragment() {
 
             val marker = Marker(mapView)
             marker.position = GeoPoint(lat, lon)
-            marker.title = trip.name
+            marker.title = trip.title
             marker.subDescription = trip.date
             marker.setOnMarkerClickListener { _, _ ->
                 showTripDetailsBottomSheet(trip)

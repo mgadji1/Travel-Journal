@@ -35,7 +35,7 @@ class TripAdapter(
 
         imageLoader.loadImage(trip.imageUri, holder.imPhoto)
 
-        holder.tvName.text = trip.name
+        holder.tvName.text = trip.title
 
         holder.itemView.setOnClickListener {
             listener.onClick(trip)
@@ -46,11 +46,13 @@ class TripAdapter(
 
             popupMenu.menu.add(context.getString(R.string.edit))
             popupMenu.menu.add(context.getString(R.string.delete))
+            popupMenu.menu.add(context.getString(R.string.share))
 
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.title) {
                     context.getString(R.string.edit) -> onMoreOptionsClickListener.onEdit(trip)
                     context.getString(R.string.delete) -> onMoreOptionsClickListener.onDelete(trip)
+                    context.getString(R.string.share) -> onMoreOptionsClickListener.onShare(trip)
                 }
                 true
             }

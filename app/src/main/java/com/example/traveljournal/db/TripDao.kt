@@ -21,6 +21,6 @@ interface TripDao {
     @Delete
     suspend fun deleteTrip(trip : Trip)
 
-    @Query("SELECT * FROM trips WHERE name LIKE :query OR description LIKE :query")
+    @Query("SELECT * FROM trips WHERE title LIKE :query OR description LIKE :query")
     suspend fun searchByQuery(query: String) : List<Trip>
 }
