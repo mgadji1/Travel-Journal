@@ -1,5 +1,6 @@
 package com.example.traveljournal.fragments
 
+import android.content.Intent
 import java.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
@@ -31,8 +33,13 @@ class AddNewTripFragment : Fragment() {
     private lateinit var db : AppDatabase
     private lateinit var tripDao : TripDao
 
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri : Uri? ->
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri : Uri? ->
         uri?.let {
+            requireContext().contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+
             selectedImageUri = it
             imagePreview.setImageURI(it)
         }
@@ -41,6 +48,7 @@ class AddNewTripFragment : Fragment() {
     private lateinit var btnAddTrip : Button
     private lateinit var edName : EditText
     private lateinit var edDescription : EditText
+    private lateinit var tvLocation : TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,7 +68,7 @@ class AddNewTripFragment : Fragment() {
         tripDao = db.tripDao()
 
         val btnLocation = view.findViewById<Button>(R.id.btnLocation)
-        val tvLocation = view.findViewById<TextView>(R.id.tvLocation)
+        tvLocation = view.findViewById(R.id.tvLocation)
 
         btnLocation.setOnClickListener {
             parentFragmentManager
@@ -87,7 +95,7 @@ class AddNewTripFragment : Fragment() {
         val btnPickImage = view.findViewById<Button>(R.id.btnPickImage)
 
         btnPickImage.setOnClickListener {
-            pickImageLauncher.launch("image/*")
+            pickImageLauncher.launch(arrayOf("image/*"))
         }
 
         btnAddTrip = view.findViewById(R.id.btnAddTrip)
@@ -102,7 +110,7 @@ class AddNewTripFragment : Fragment() {
     }
 
     private fun getCurrentDate() : String {
-        val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
         val formattedDate = formatter.format(Date())
 
         return formattedDate
@@ -126,7 +134,21 @@ class AddNewTripFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                 tripDao.insertTrip(trip)
             }
+
+            Toast.makeText(requireContext(), getString(R.string.trip_was_added), Toast.LENGTH_SHORT).show()
+
+            clearAllFields()
+        } else {
+            Toast.makeText(requireContext(),
+                getString(R.string.you_need_to_fill_all_fields), Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun clearAllFields() {
+        edName.text.clear()
+        edDescription.text.clear()
+        imagePreview.setImageDrawable(null)
+        tvLocation.text = ""
     }
 
     companion object {

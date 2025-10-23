@@ -163,9 +163,13 @@ class TripsFragment : Fragment() {
     }
 
     private fun sortTripsByDate(ascending : Boolean) {
-        val sortedTrips = adapter.getTrips().sortedBy { it.date }
-        if (ascending) adapter.setTrips(sortedTrips)
-        else adapter.setTrips(sortedTrips.reversed())
+        val sortedTrips = if (ascending) {
+            adapter.getTrips().sorted()
+        } else {
+            adapter.getTrips().sortedDescending()
+        }
+
+        adapter.setTrips(sortedTrips)
     }
 
     companion object {

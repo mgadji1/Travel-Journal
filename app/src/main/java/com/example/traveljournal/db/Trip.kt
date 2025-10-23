@@ -20,7 +20,7 @@ data class Trip(
     val longitude : Double
 ) : Parcelable, Comparable<Trip> {
     override fun compareTo(other: Trip): Int {
-        val format = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
         val thisDate = format.parse(this.date) ?: Date(0)
         val otherDate = format.parse(other.date) ?: Date(0)
 

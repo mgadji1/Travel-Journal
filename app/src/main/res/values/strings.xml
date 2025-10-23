@@ -18,4 +18,6 @@
     <string name="choose_location">Choose Location</string>
     <string name="pick_image">Pick Image</string>
     <string name="location">Location</string>
+    <string name="trip_was_added">Trip was added</string>
+    <string name="you_need_to_fill_all_fields">You need to fill all fields</string>
 </resources>
